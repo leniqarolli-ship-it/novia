@@ -21,15 +21,12 @@
     .hero h1 { font-family: 'Fraunces', serif; font-size: clamp(28px, 4vw, 42px); font-weight: 500; line-height: 1.2; margin-bottom: 12px; }
     .hero h1 em { color: var(--terracotta); font-style: italic; }
     .hero p { font-size: 15px; color: var(--warm-gray); max-width: 480px; margin: 0 auto; line-height: 1.6; }
-
-    .container { max-width: 1000px; margin: 0 auto; padding: 0 24px 80px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+    .container { max-width: 1040px; margin: 0 auto; padding: 0 24px 80px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
     @media (max-width: 720px) { .container { grid-template-columns: 1fr; } }
-
     .card { background: white; border: 1px solid var(--border); border-radius: 20px; padding: 32px; }
     .card h2 { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 500; margin-bottom: 24px; }
     .section-title { font-size: 11px; font-weight: 500; color: var(--terracotta); text-transform: uppercase; letter-spacing: 1.5px; margin: 24px 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-
-    .form-group { margin-bottom: 16px; }
+    .form-group { margin-bottom: 14px; }
     label { display: block; font-size: 11px; font-weight: 500; color: var(--light-text); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 7px; }
     label .req { color: var(--terracotta); }
     input, select, textarea { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--charcoal); background: var(--cream); outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
@@ -37,6 +34,13 @@
     textarea { resize: vertical; min-height: 80px; }
     .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+    /* Style selector */
+    .style-selector { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+    .style-btn { padding: 10px 8px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; background: white; color: var(--warm-gray); transition: all 0.2s; text-align: center; }
+    .style-btn:hover { border-color: var(--terracotta); color: var(--terracotta); }
+    .style-btn.active { background: var(--terracotta); color: white; border-color: var(--terracotta); }
+    .style-desc { font-size: 12px; color: var(--light-text); margin-bottom: 14px; line-height: 1.5; font-style: italic; }
 
     .btn { width: 100%; padding: 14px 24px; background: var(--terracotta); color: white; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.2s, transform 0.15s, box-shadow 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 8px; }
     .btn:hover:not(:disabled) { background: var(--terracotta-dark); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(196,115,74,0.3); }
@@ -55,6 +59,7 @@
     .placeholder p { font-size: 14px; line-height: 1.6; max-width: 200px; }
     .result-body { display: none; }
     .timer { display: inline-flex; align-items: center; gap: 6px; background: rgba(61,90,71,0.08); color: var(--forest); font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 20px; margin-bottom: 16px; }
+    .style-tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(196,115,74,0.08); color: var(--terracotta); font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 20px; margin-left: 8px; }
     .annonce-box { font-size: 14px; line-height: 1.9; color: var(--charcoal); white-space: pre-wrap; background: var(--cream); border: 1px solid var(--border); border-radius: 12px; padding: 20px; min-height: 300px; }
     .actions { display: flex; gap: 10px; margin-top: 16px; }
     .btn-sec { flex: 1; padding: 10px 16px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; background: white; color: var(--warm-gray); transition: all 0.2s; }
@@ -73,15 +78,22 @@
 <section class="hero">
   <div class="badge">✨ Démo live</div>
   <h1>Votre annonce pro<br>en <em>90 secondes</em></h1>
-  <p>Remplissez les champs, l'IA génère une annonce complète, honnête et prête à publier.</p>
+  <p>Remplissez les champs, choisissez le style, l'IA génère une annonce complète et prête à publier.</p>
 </section>
 
 <div class="container">
   <div class="card">
     <h2>Votre bien</h2>
 
-    <div class="section-title">Localisation</div>
+    <div class="section-title">Type de transaction</div>
     <div class="row2">
+      <div class="form-group">
+        <label>Transaction <span class="req">*</span></label>
+        <select id="typeTransaction">
+          <option value="Vente">Vente</option>
+          <option value="Location">Location</option>
+        </select>
+      </div>
       <div class="form-group">
         <label>Type de bien <span class="req">*</span></label>
         <select id="typeBien">
@@ -91,14 +103,18 @@
           <option>Terrain</option><option>Bureau / commerce</option>
         </select>
       </div>
+    </div>
+
+    <div class="section-title">Localisation</div>
+    <div class="row2">
       <div class="form-group">
         <label>Localité <span class="req">*</span></label>
         <input type="text" id="localite" placeholder="ex: Liège">
       </div>
-    </div>
-    <div class="form-group">
-      <label>Quartier / rue</label>
-      <input type="text" id="quartier" placeholder="ex: Outremeuse, proche gare, centre-ville...">
+      <div class="form-group">
+        <label>Quartier / rue</label>
+        <input type="text" id="quartier" placeholder="ex: Outremeuse, proche gare...">
+      </div>
     </div>
 
     <div class="section-title">Caractéristiques</div>
@@ -109,10 +125,7 @@
       </div>
       <div class="form-group">
         <label>Chambres</label>
-        <select id="chambres">
-          <option value="">–</option>
-          <option>1</option><option>2</option><option>3</option><option>4</option><option>5+</option>
-        </select>
+        <input type="number" id="chambres" placeholder="ex: 3">
       </div>
       <div class="form-group">
         <label>Étage</label>
@@ -123,8 +136,7 @@
       <div class="form-group">
         <label>Ascenseur</label>
         <select id="ascenseur">
-          <option value="">–</option>
-          <option>Oui</option><option>Non</option>
+          <option value="">–</option><option>Oui</option><option>Non</option>
         </select>
       </div>
       <div class="form-group">
@@ -143,22 +155,17 @@
     <div class="row3">
       <div class="form-group">
         <label>Cave</label>
-        <select id="cave">
-          <option value="">–</option><option>Oui</option><option>Non</option>
-        </select>
+        <select id="cave"><option value="">–</option><option>Oui</option><option>Non</option></select>
       </div>
       <div class="form-group">
         <label>Parking</label>
         <select id="parking">
-          <option value="">–</option>
-          <option>Oui, intérieur</option><option>Oui, extérieur</option><option>Non</option>
+          <option value="">–</option><option>Oui, intérieur</option><option>Oui, extérieur</option><option>Non</option>
         </select>
       </div>
       <div class="form-group">
         <label>Fibre internet</label>
-        <select id="fibre">
-          <option value="">–</option><option>Oui</option><option>Non</option>
-        </select>
+        <select id="fibre"><option value="">–</option><option>Oui</option><option>Non</option></select>
       </div>
     </div>
     <div class="form-group">
@@ -178,7 +185,7 @@
       </div>
       <div class="form-group">
         <label>Type de chauffage</label>
-        <input type="text" id="chauffage" placeholder="ex: Gaz individuel, mazout, pompe à chaleur...">
+        <input type="text" id="chauffage" placeholder="ex: Gaz individuel, mazout...">
       </div>
     </div>
 
@@ -196,13 +203,13 @@
     </div>
     <div class="form-group">
       <label>Défauts / réparations à prévoir</label>
-      <textarea id="defauts" placeholder="ex: Toiture à vérifier, chaudière ancienne (2008), salle de bain à rénover..."></textarea>
+      <textarea id="defauts" placeholder="ex: Chaudière de 2008 à vérifier, salle de bain à rénover..."></textarea>
     </div>
 
     <div class="section-title">Finances</div>
     <div class="row2">
       <div class="form-group">
-        <label>Prix (€) <span class="req">*</span></label>
+        <label>Prix / Loyer (€) <span class="req">*</span></label>
         <input type="number" id="prix" placeholder="ex: 249000">
       </div>
       <div class="form-group">
@@ -212,7 +219,7 @@
     </div>
     <div class="form-group">
       <label>Charges incluent</label>
-      <input type="text" id="chargesInclus" placeholder="ex: eau, communs, ascenseur, syndic...">
+      <input type="text" id="chargesInclus" placeholder="ex: eau, communs, ascenseur...">
     </div>
     <div class="row2">
       <div class="form-group">
@@ -220,7 +227,7 @@
         <input type="text" id="precompte" placeholder="ex: 1.200€/an">
       </div>
       <div class="form-group">
-        <label>Travaux copropriété prévus</label>
+        <label>Travaux prévus</label>
         <input type="text" id="travaux" placeholder="ex: Ravalement 2026, aucun...">
       </div>
     </div>
@@ -233,15 +240,23 @@
       </div>
       <div class="form-group">
         <label>Durée du bail</label>
-        <input type="text" id="bail" placeholder="ex: 3 ans, 9 ans, courte durée...">
+        <input type="text" id="bail" placeholder="ex: 3 ans, 9 ans...">
       </div>
     </div>
 
     <div class="section-title">Points forts</div>
     <div class="form-group">
-      <label>Ce qui rend ce bien unique</label>
-      <textarea id="pointsForts" placeholder="ex: Vue dégagée sur la Meuse, rénovation complète 2022, quartier calme et résidentiel, proche toutes commodités..."></textarea>
+      <textarea id="pointsForts" placeholder="ex: Vue dégagée, rénovation complète 2022, quartier calme, proche commodités..."></textarea>
     </div>
+
+    <div class="section-title">Style de l'annonce</div>
+    <div class="style-selector">
+      <button class="style-btn active" onclick="setStyle('Sobre / Professionnel', this)">Sobre<br><small>Professionnel</small></button>
+      <button class="style-btn" onclick="setStyle('Commercial / Émotionnel', this)">Commercial<br><small>Émotionnel</small></button>
+      <button class="style-btn" onclick="setStyle('Premium / Luxe', this)">Premium<br><small>Luxe</small></button>
+    </div>
+    <div class="style-desc" id="styleDesc">Faits, structure claire, ton neutre. Inspire confiance par sa rigueur.</div>
+    <input type="hidden" id="styleAnnonce" value="Sobre / Professionnel">
 
     <button class="btn" id="btnGen" onclick="generer()">
       <span id="btnTxt">⚡ Générer l'annonce</span>
@@ -257,7 +272,11 @@
       <p>Remplissez le formulaire et cliquez sur Générer</p>
     </div>
     <div class="result-body" id="resultBody">
-      <div class="timer" id="timer">⚡ Générée en — s</div>
+      <div>
+        <span class="timer" id="timer">⚡ Générée en — s</span>
+        <span class="style-tag" id="styleTag"></span>
+      </div>
+      <br>
       <div class="annonce-box" id="annonceBox"></div>
       <div class="actions">
         <button class="btn-sec" id="btnCopy" onclick="copier()">📋 Copier</button>
@@ -270,11 +289,24 @@
 <footer>Propulsé par <a href="/">NovIA</a> — Automatisation IA pour agences immobilières belges</footer>
 
 <script>
+const styleDescriptions = {
+  'Sobre / Professionnel': 'Faits, structure claire, ton neutre. Inspire confiance par sa rigueur.',
+  'Commercial / Émotionnel': 'Storytelling ancré dans des faits. Donne envie de visiter. Idéal pour biens familiaux.',
+  'Premium / Luxe': 'Vocabulaire raffiné, sobre dans l\'exclusivité. Pour biens d\'exception.'
+};
+
+function setStyle(style, btn) {
+  document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('styleAnnonce').value = style;
+  document.getElementById('styleDesc').textContent = styleDescriptions[style];
+}
+
 async function generer() {
-  const champs = ['typeBien','localite','quartier','surface','chambres','etage','ascenseur',
+  const champs = ['typeTransaction','typeBien','localite','quartier','surface','chambres','etage','ascenseur',
     'exposition','anneeConstruction','cave','parking','fibre','jardinTerrasse',
     'peb','chauffage','etatBien','defauts','prix','charges','chargesInclus',
-    'precompte','travaux','disponibilite','bail','pointsForts'];
+    'precompte','travaux','disponibilite','bail','pointsForts','styleAnnonce'];
 
   const data = {};
   champs.forEach(id => { data[id] = document.getElementById(id).value; });
@@ -307,6 +339,7 @@ async function generer() {
     document.getElementById('resultBody').style.display = 'block';
     document.getElementById('annonceBox').textContent = result.annonce;
     document.getElementById('timer').textContent = `⚡ Générée en ${elapsed}s`;
+    document.getElementById('styleTag').textContent = data.styleAnnonce;
     document.getElementById('btnCopy').textContent = '📋 Copier';
     document.getElementById('btnCopy').classList.remove('copied');
   } catch(e) {
@@ -331,10 +364,6 @@ function resetForm() {
   document.getElementById('resultBody').style.display = 'none';
   document.getElementById('placeholder').style.display = 'flex';
   document.getElementById('err').style.display = 'none';
-  ['typeBien','localite','quartier','surface','chambres','etage','ascenseur','exposition',
-   'anneeConstruction','cave','parking','fibre','jardinTerrasse','peb','chauffage',
-   'etatBien','defauts','prix','charges','chargesInclus','precompte','travaux',
-   'disponibilite','bail','pointsForts'].forEach(id => document.getElementById(id).value = '');
 }
 </script>
 </body>
