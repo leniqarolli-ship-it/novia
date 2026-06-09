@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NovIA — Automatisation IA pour les professionnels de l'immobilier</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #FAF7F2;
+      --warm-white: #FDF9F4;
+      --sand: #F0E8DA;
+      --sand-dark: #E2D4C0;
+      --terracotta: #C4734A;
+      --terracotta-light: #D4896A;
+      --terracotta-dark: #A85C38;
+      --forest: #3D5A47;
+      --forest-light: #4E7260;
+      --charcoal: #2C2A27;
+      --warm-gray: #6B6460;
+      --light-text: #9A918A;
+      --border: rgba(196, 115, 74, 0.15);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--charcoal);
+      overflow-x: hidden;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 48px;
+      background: rgba(250, 247, 242, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .logo {
+      font-family: 'Fraunces', serif;
+      font-size: 24px; font-weight: 600;
+      color: var(--charcoal); letter-spacing: -0.5px;
+    }
+    .logo span { color: var(--terracotta); }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a {
+      font-size: 14px; color: var(--warm-gray);
+      text-decoration: none; transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--charcoal); }
+    .nav-cta {
+      background: var(--terracotta); color: white;
+      padding: 10px 22px; border-radius: 100px;
+      font-size: 14px; font-weight: 500;
+      text-decoration: none; transition: background 0.2s, transform 0.2s;
+    }
+    .nav-cta:hover { background: var(--terracotta-dark); transform: translateY(-1px); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 120px 48px 80px;
+      position: relative; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 80% 20%, rgba(196,115,74,0.10) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 60% at 10% 80%, rgba(61,90,71,0.08) 0%, transparent 60%);
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--sand); border: 1px solid var(--sand-dark);
+      padding: 6px 16px; border-radius: 100px;
+      font-size: 13px; color: var(--terracotta); font-weight: 500;
+      margin-bottom: 32px; width: fit-content;
+      animation: fadeUp 0.6s ease both;
+    }
+    .hero-badge::before {
+      content: ''; width: 6px; height: 6px;
+      background: var(--terracotta); border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100%{opacity:1;transform:scale(1)}
+      50%{opacity:0.5;transform:scale(1.4)}
+    }
+    .hero h1 {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(40px, 6vw, 78px);
+      font-weight: 500; line-height: 1.08;
+      letter-spacing: -2px; max-width: 780px;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+    .hero h1 em {
+      font-style: italic; color: var(--terracotta);
+      font-weight: 300;
+    }
+    .hero-sub {
+      font-size: 18px; color: var(--warm-gray);
+      line-height: 1.7; max-width: 520px;
+      margin: 28px 0 44px;
+      animation: fadeUp 0.6s 0.2s ease both;
+    }
+    .hero-actions {
+      display: flex; gap: 16px; flex-wrap: wrap;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+    .btn-primary {
+      background: var(--terracotta); color: white;
+      padding: 16px 32px; border-radius: 100px;
+      font-size: 15px; font-weight: 500;
+      text-decoration: none; border: none; cursor: pointer;
+      transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-primary:hover { background: var(--terracotta-dark); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(196,115,74,0.3); }
+    .btn-secondary {
+      background: transparent; color: var(--charcoal);
+      padding: 16px 32px; border-radius: 100px;
+      font-size: 15px; font-weight: 500;
+      text-decoration: none; border: 1.5px solid var(--sand-dark);
+      transition: all 0.2s; cursor: pointer;
+    }
+    .btn-secondary:hover { border-color: var(--terracotta); color: var(--terracotta); }
+
+    .hero-stats {
+      display: flex; gap: 48px; margin-top: 72px;
+      padding-top: 40px; border-top: 1px solid var(--border);
+      animation: fadeUp 0.6s 0.4s ease both;
+    }
+    .stat-num {
+      font-family: 'Fraunces', serif;
+      font-size: 36px; font-weight: 600; color: var(--charcoal);
+      letter-spacing: -1px;
+    }
+    .stat-num span { color: var(--terracotta); }
+    .stat-label { font-size: 13px; color: var(--light-text); margin-top: 4px; }
+
+    /* FLOATING CARD */
+    .hero-card {
+      position: absolute; right: 6%; top: 50%; transform: translateY(-50%);
+      background: var(--warm-white); border: 1px solid var(--sand-dark);
+      border-radius: 20px; padding: 24px; width: 280px;
+      box-shadow: 0 20px 60px rgba(44,42,39,0.10);
+      animation: float 4s ease-in-out infinite, fadeUp 0.8s 0.5s ease both;
+    }
+    @keyframes float {
+      0%,100%{transform:translateY(-50%) translateY(0)}
+      50%{transform:translateY(-50%) translateY(-12px)}
+    }
+    .hero-card-label { font-size:11px; font-weight:500; color:var(--light-text); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; }
+    .hero-card-title { font-family:'Fraunces',serif; font-size:15px; font-weight:500; color:var(--charcoal); margin-bottom:16px; line-height:1.4; }
+    .hero-card-item { display:flex; align-items:center; gap:10px; margin-bottom:10px; font-size:13px; color:var(--warm-gray); }
+    .hero-card-dot { width:8px; height:8px; border-radius:50%; background:var(--forest); flex-shrink:0; }
+    .hero-card-dot.orange { background:var(--terracotta); }
+    .hero-card-time { margin-top:16px; padding-top:14px; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+    .hero-card-time-val { font-family:'Fraunces',serif; font-size:22px; font-weight:600; color:var(--terracotta); }
+    .hero-card-time-label { font-size:11px; color:var(--light-text); }
+
+    @keyframes fadeUp {
+      from{opacity:0;transform:translateY(20px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+
+    /* SECTION GÉNÉRIQUE */
+    section { padding: 100px 48px; }
+    .section-badge {
+      display:inline-block; font-size:12px; font-weight:500;
+      color:var(--terracotta); background:var(--sand);
+      padding:4px 14px; border-radius:100px; margin-bottom:16px;
+      border:1px solid var(--sand-dark);
+    }
+    .section-title {
+      font-family:'Fraunces',serif; font-size:clamp(32px,4vw,52px);
+      font-weight:500; letter-spacing:-1.5px; line-height:1.1;
+      max-width:600px; margin-bottom:16px;
+    }
+    .section-sub { font-size:17px; color:var(--warm-gray); line-height:1.7; max-width:520px; }
+
+    /* PROBLÈME */
+    .problem { background: var(--warm-white); }
+    .problem-grid { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; margin-top:60px; }
+    .problem-list { display:flex; flex-direction:column; gap:16px; }
+    .problem-item {
+      display:flex; gap:16px; align-items:flex-start;
+      background:var(--cream); border:1px solid var(--border);
+      border-radius:16px; padding:20px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .problem-item:hover { transform:translateX(4px); box-shadow:0 4px 20px rgba(44,42,39,0.06); }
+    .problem-icon { font-size:24px; flex-shrink:0; }
+    .problem-text-title { font-weight:500; font-size:14px; margin-bottom:4px; }
+    .problem-text-sub { font-size:13px; color:var(--warm-gray); line-height:1.5; }
+
+    .solution-box {
+      background:var(--forest); border-radius:24px; padding:40px;
+      color:white;
+    }
+    .solution-box h3 {
+      font-family:'Fraunces',serif; font-size:28px; font-weight:500;
+      line-height:1.2; margin-bottom:20px; letter-spacing:-0.5px;
+    }
+    .solution-box p { font-size:15px; color:rgba(255,255,255,0.72); line-height:1.7; margin-bottom:24px; }
+    .solution-tag {
+      display:inline-flex; align-items:center; gap:6px;
+      background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2);
+      padding:6px 14px; border-radius:100px; font-size:12px; color:white; margin:4px;
+    }
+
+    /* COMMENT ÇA MARCHE */
+    .how { background:var(--cream); }
+    .how-steps { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top:60px; }
+    .how-step {
+      background:var(--warm-white); border:1px solid var(--sand-dark);
+      border-radius:20px; padding:32px; position:relative;
+      transition:transform 0.2s, box-shadow 0.2s;
+    }
+    .how-step:hover { transform:translateY(-4px); box-shadow:0 12px 40px rgba(44,42,39,0.08); }
+    .how-step-num {
+      font-family:'Fraunces',serif; font-size:48px; font-weight:600;
+      color:var(--sand-dark); line-height:1; margin-bottom:20px;
+    }
+    .how-step h3 { font-size:16px; font-weight:500; margin-bottom:10px; }
+    .how-step p { font-size:14px; color:var(--warm-gray); line-height:1.6; }
+    .how-step-arrow {
+      position:absolute; right:-36px; top:50%; transform:translateY(-50%);
+      font-size:24px; color:var(--sand-dark); z-index:1;
+    }
+
+    /* OFFRES */
+    .offers { background:var(--sand); }
+    .offers-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:60px; }
+    .offer-card {
+      background:var(--warm-white); border:1px solid var(--sand-dark);
+      border-radius:20px; padding:32px; transition:transform 0.2s, box-shadow 0.2s;
+      position:relative; overflow:hidden;
+    }
+    .offer-card:hover { transform:translateY(-4px); box-shadow:0 16px 48px rgba(44,42,39,0.10); }
+    .offer-card.featured {
+      background:var(--charcoal); color:white;
+      border-color:transparent;
+    }
+    .offer-popular {
+      position:absolute; top:20px; right:20px;
+      background:var(--terracotta); color:white;
+      font-size:11px; font-weight:500; padding:4px 12px;
+      border-radius:100px;
+    }
+    .offer-name { font-size:13px; font-weight:500; color:var(--light-text); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; }
+    .offer-card.featured .offer-name { color:rgba(255,255,255,0.5); }
+    .offer-price {
+      font-family:'Fraunces',serif; font-size:40px; font-weight:600;
+      letter-spacing:-1px; margin-bottom:4px;
+    }
+    .offer-price span { font-size:16px; font-weight:400; color:var(--warm-gray); font-family:'DM Sans',sans-serif; }
+    .offer-card.featured .offer-price span { color:rgba(255,255,255,0.5); }
+    .offer-setup { font-size:13px; color:var(--warm-gray); margin-bottom:24px; }
+    .offer-card.featured .offer-setup { color:rgba(255,255,255,0.5); }
+    .offer-divider { border:none; border-top:1px solid var(--border); margin:0 0 20px; }
+    .offer-card.featured .offer-divider { border-top-color:rgba(255,255,255,0.12); }
+    .offer-feature { display:flex; gap:10px; align-items:flex-start; font-size:13px; margin-bottom:10px; color:var(--warm-gray); }
+    .offer-card.featured .offer-feature { color:rgba(255,255,255,0.7); }
+    .offer-feature-check { color:var(--forest); flex-shrink:0; font-weight:600; }
+    .offer-card.featured .offer-feature-check { color:var(--terracotta-light); }
+    .offer-btn {
+      display:block; text-align:center; margin-top:28px;
+      padding:14px; border-radius:100px; font-size:14px; font-weight:500;
+      text-decoration:none; transition:all 0.2s;
+      border:1.5px solid var(--sand-dark); color:var(--charcoal);
+    }
+    .offer-btn:hover { border-color:var(--terracotta); color:var(--terracotta); }
+    .offer-card.featured .offer-btn {
+      background:var(--terracotta); color:white; border-color:transparent;
+    }
+    .offer-card.featured .offer-btn:hover { background:var(--terracotta-light); }
+
+    /* AUTOMATISATIONS */
+    .automations { background:var(--warm-white); }
+    .auto-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin-top:60px; }
+    .auto-card {
+      background:var(--cream); border:1px solid var(--border);
+      border-radius:16px; padding:24px;
+      transition:transform 0.2s, box-shadow 0.2s;
+    }
+    .auto-card:hover { transform:translateY(-3px); box-shadow:0 8px 28px rgba(44,42,39,0.07); }
+    .auto-icon { font-size:28px; margin-bottom:14px; }
+    .auto-title { font-size:15px; font-weight:500; margin-bottom:6px; }
+    .auto-desc { font-size:13px; color:var(--warm-gray); line-height:1.5; }
+
+    /* TÉMOIGNAGES */
+    .testimonials { background:var(--cream); }
+    .testi-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:60px; }
+    .testi-card {
+      background:var(--warm-white); border:1px solid var(--sand-dark);
+      border-radius:20px; padding:28px;
+    }
+    .testi-stars { color:var(--terracotta); font-size:14px; margin-bottom:16px; }
+    .testi-text { font-size:14px; color:var(--warm-gray); line-height:1.7; margin-bottom:20px; font-style:italic; }
+    .testi-author { display:flex; align-items:center; gap:12px; }
+    .testi-avatar {
+      width:40px; height:40px; border-radius:50%;
+      background:var(--sand); display:flex; align-items:center; justify-content:center;
+      font-family:'Fraunces',serif; font-size:16px; font-weight:500; color:var(--terracotta);
+    }
+    .testi-name { font-size:14px; font-weight:500; }
+    .testi-role { font-size:12px; color:var(--light-text); }
+
+    /* CTA FINAL */
+    .cta-section {
+      background:var(--charcoal); color:white;
+      text-align:center; padding:100px 48px;
+    }
+    .cta-section .section-title { color:white; margin:0 auto 16px; }
+    .cta-section .section-sub { color:rgba(255,255,255,0.6); margin:0 auto 44px; }
+    .cta-section .btn-primary { font-size:16px; padding:18px 40px; }
+
+    /* FOOTER */
+    footer {
+      background:var(--charcoal); color:rgba(255,255,255,0.4);
+      padding:32px 48px; border-top:1px solid rgba(255,255,255,0.06);
+      display:flex; justify-content:space-between; align-items:center;
+      font-size:13px;
+    }
+    footer .logo { color:white; font-size:18px; }
+
+    /* RESPONSIVE */
+    @media(max-width:900px){
+      nav { padding:16px 24px; }
+      .nav-links { display:none; }
+      .hero { padding:100px 24px 60px; }
+      .hero-card { display:none; }
+      section { padding:72px 24px; }
+      .problem-grid, .how-steps, .offers-grid, .testi-grid { grid-template-columns:1fr; }
+      .how-step-arrow { display:none; }
+      .hero-stats { gap:32px; flex-wrap:wrap; }
+      footer { flex-direction:column; gap:12px; text-align:center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Nov<span>IA</span></div>
+  <div class="nav-links">
+    <a href="#comment">Comment ça marche</a>
+    <a href="#offres">Offres</a>
+    <a href="#automatisations">Automatisations</a>
+    <a href="#contact" class="nav-cta">Demander une démo →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div style="position:relative;z-index:1">
+    <div class="hero-badge">🚀 Automatisation IA pour l'immobilier</div>
+    <h1>Votre agence tourne.<br><em>Même quand vous dormez.</em></h1>
+    <p class="hero-sub">NovIA automatise vos relances, rédige vos annonces et gère votre suivi client — sans que vous leviez le petit doigt. 5 à 8 heures récupérées chaque semaine.</p>
+    <div class="hero-actions">
+      <a href="#contact" class="btn-primary">Voir une démo gratuite →</a>
+      <a href="#comment" class="btn-secondary">Comment ça marche</a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="stat-num">5<span>h</span></div>
+        <div class="stat-label">récupérées par semaine</div>
+      </div>
+      <div>
+        <div class="stat-num">2<span>min</span></div>
+        <div class="stat-label">pour répondre à un lead</div>
+      </div>
+      <div>
+        <div class="stat-num">90<span>s</span></div>
+        <div class="stat-label">pour rédiger une annonce</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-card">
+    <div class="hero-card-label">Workflow actif</div>
+    <div class="hero-card-title">Relance automatique prospects</div>
+    <div class="hero-card-item"><div class="hero-card-dot orange"></div>Réponse envoyée en 2 min</div>
+    <div class="hero-card-item"><div class="hero-card-dot"></div>Relance J+1 programmée</div>
+    <div class="hero-card-item"><div class="hero-card-dot"></div>Fiche CRM créée</div>
+    <div class="hero-card-item"><div class="hero-card-dot"></div>Agent notifié</div>
+    <div class="hero-card-time">
+      <div>
+        <div class="hero-card-time-val">0 min</div>
+        <div class="hero-card-time-label">de votre temps</div>
+      </div>
+      <div style="font-size:28px">⚡</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLÈME -->
+<section class="problem" id="probleme">
+  <span class="section-badge">Le problème</span>
+  <h2 class="section-title">Votre temps ne devrait pas partir dans ces tâches</h2>
+  <div class="problem-grid">
+    <div class="problem-list">
+      <div class="problem-item">
+        <div class="problem-icon">✉️</div>
+        <div>
+          <div class="problem-text-title">Réponses aux leads trop lentes</div>
+          <div class="problem-text-sub">Vous répondez en 6 heures. Vos concurrents prennent le client en 2 minutes.</div>
+        </div>
+      </div>
+      <div class="problem-item">
+        <div class="problem-icon">📝</div>
+        <div>
+          <div class="problem-text-title">Annonces rédigées à la main</div>
+          <div class="problem-text-sub">30 minutes par annonce, multipliées par tous vos biens. C'est votre soirée partie.</div>
+        </div>
+      </div>
+      <div class="problem-item">
+        <div class="problem-icon">🔔</div>
+        <div>
+          <div class="problem-text-title">Relances oubliées ou jamais faites</div>
+          <div class="problem-text-sub">Des prospects qui auraient pu signer si vous les aviez relancé au bon moment.</div>
+        </div>
+      </div>
+      <div class="problem-item">
+        <div class="problem-icon">📋</div>
+        <div>
+          <div class="problem-text-title">Admin et saisie manuelle sans fin</div>
+          <div class="problem-text-sub">CRM, tableaux de suivi, rapports... Des heures sur des tâches sans valeur ajoutée.</div>
+        </div>
+      </div>
+    </div>
+    <div class="solution-box">
+      <h3>NovIA prend tout ça en charge. Automatiquement.</h3>
+      <p>Nous construisons des systèmes d'automatisation IA sur mesure pour votre agence. Une fois en place, tout tourne seul — 24h/24, 7j/7, sans erreur, sans oubli.</p>
+      <div>
+        <span class="solution-tag">✓ Réponse en 2 min</span>
+        <span class="solution-tag">✓ Annonces en 90s</span>
+        <span class="solution-tag">✓ Relances auto</span>
+        <span class="solution-tag">✓ CRM automatique</span>
+        <span class="solution-tag">✓ Rapports hebdo</span>
+        <span class="solution-tag">✓ 0 heure de votre temps</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMMENT ÇA MARCHE -->
+<section class="how" id="comment">
+  <span class="section-badge">Comment ça marche</span>
+  <h2 class="section-title">Simple comme bonjour</h2>
+  <p class="section-sub">Pas de code, pas de technique de votre côté. On s'occupe de tout.</p>
+  <div class="how-steps">
+    <div class="how-step">
+      <div class="how-step-num">01</div>
+      <h3>On apprend à connaître votre agence</h3>
+      <p>Un appel de 30 minutes pour comprendre votre quotidien, vos outils, et les tâches qui vous prennent le plus de temps.</p>
+      <div class="how-step-arrow">→</div>
+    </div>
+    <div class="how-step">
+      <div class="how-step-num">02</div>
+      <h3>On construit vos automatisations</h3>
+      <p>Nos systèmes sont opérationnels en 5 à 7 jours. Vous n'avez rien à faire — on configure tout, on teste tout.</p>
+      <div class="how-step-arrow">→</div>
+    </div>
+    <div class="how-step">
+      <div class="how-step-num">03</div>
+      <h3>Votre agence tourne en automatique</h3>
+      <p>Dès le premier jour, vos leads sont traités, vos annonces rédigées, vos clients relancés. Sans vous.</p>
+    </div>
+  </div>
+</section>
+
+<!-- AUTOMATISATIONS -->
+<section class="automations" id="automatisations">
+  <span class="section-badge">Ce qu'on automatise</span>
+  <h2 class="section-title">20+ tâches prises en charge</h2>
+  <p class="section-sub">Tout ce qui se répète, on l'automatise. Vous gardez ce qui demande votre expertise humaine.</p>
+  <div class="auto-grid">
+    <div class="auto-card">
+      <div class="auto-icon">⚡</div>
+      <div class="auto-title">Réponse aux leads</div>
+      <div class="auto-desc">Message personnalisé envoyé en moins de 2 minutes après chaque demande de contact.</div>
+    </div>
+    <div class="auto-card">
+      <div class="auto-icon">📣</div>
+      <div class="auto-title">Rédaction d'annonces</div>
+      <div class="auto-desc">Annonce professionnelle générée en 90 secondes depuis une fiche descriptive simple.</div>
+    </div>
+    <div class="auto-card">
+      <div class="auto-icon">🔄</div>
+      <div class="auto-title">Séquences de relance</div>
+      <div class="auto-desc">4 relances automatiques espacées sur 30 jours pour chaque prospect non répondu.</div>
+    </div>
+    <div class="auto-card">
+      <div class="auto-icon">📅</div>
+      <div class="auto-title">Prise de rendez-vous</div>
+      <div class="auto-desc">Agenda synchronisé, confirmations et rappels automatiques avant chaque visite.</div>
+    </div>
+    <div class="auto-card">
+      <div class="auto-icon">📊</div>
+      <div class="auto-title">CRM automatique</div>
+      <div class="auto-desc">Fiche prospect créée et mise à jour automatiquement à chaque interaction.</div>
+    </div>
+    <div class="auto-card">
+      <div class="auto-icon">📱</div>
+      <div class="auto-title">Posts réseaux sociaux</div>
+      <div class="auto-desc">Publication automatique sur Instagram et Facebook à chaque nouveau bien.</div>
+    </div>
+    <div class="auto-card">
+      <div class="auto-icon">📝</div>
+      <div class="auto-title">Comptes-rendus de visite</div>
+      <div class="auto-desc">1 minute de dictée vocale → compte-rendu structuré envoyé au client.</div>
+    </div>
+    <div class="auto-card">
+      <div class="auto-icon">⭐</div>
+      <div class="auto-title">Demandes d'avis Google</div>
+      <div class="auto-desc">Message automatique après chaque vente pour booster votre réputation en ligne.</div>
+    </div>
+  </div>
+</section>
+
+<!-- OFFRES -->
+<section class="offers" id="offres">
+  <span class="section-badge">Nos offres</span>
+  <h2 class="section-title">Simple, transparent, sans surprise</h2>
+  <p class="section-sub">Un forfait setup unique, puis un abonnement mensuel. Résiliable à tout moment.</p>
+  <div class="offers-grid">
+    <div class="offer-card">
+      <div class="offer-name">Starter</div>
+      <div class="offer-price">349€ <span>/ mois</span></div>
+      <div class="offer-setup">+ 600€ de setup (une seule fois)</div>
+      <hr class="offer-divider">
+      <div class="offer-feature"><span class="offer-feature-check">✓</span> Réponse automatique aux leads</div>
+      <div class="offer-feature"><span class="offer-feature-check">✓</span> Séquence de relance 30 jours</div>
+      <div class="offer-feature"><span class="offer-feature-check">✓</span> Rédaction d'annonces IA</div>
+      <div class="offer-feature"><span class="offer-feature-check">✓</span> CRM simple automatisé</div>
+      <div class="offer-feature"><span class="offer-feature-check">✓</span> Support réactif</div>
+      <a href="#contact" class="offer-btn">Commencer →</a>
+    </div>
+    <div class="offer-card featured">
+      <div class="offer-popular">Le plus populaire</div>
+      <div class="offer-name">Business</div>
+      <div class="offer-price">699€ <span>/ mois</span></div>
+      <div class="offer-setup">+ 1 200€ de setup (une seule fois)</div>
+      <hr class="offer-divider">
+      <div class="offer-feature"><span class="offer-feature-check">✓</span> Tout le pack Starter</div>
+      <div class="offer-feature"><span class="offer-feature-check">✓</span> Prise de RDV automatique</div>
+      <div class="offer-feature"><span class="offer-feature-check">✓</span> Posts réseaux sociaux auto</div>
+      <div class="offer-feature"><span class="offer-feature-check">✓</span> Comptes-rendus de visite IA</div>
+      <div class="offer-feature"><span class="offer-feature-check">✓</span> Rapport hebdo automatique</div>
+      <div class="offer-feature"><span class="offer-feature-check">✓</span> Demandes d'avis Google</div>
+      <a href="#contact" class="offer-btn">Commencer →</a>
+    </div>
+    <div class="offer-card">
+      <div class="offer-name">Scale</div>
+      <div class="offer-price">1 200€ <span>/ mois</span></div>
+      <div class="offer-setup">+ 2 500€ de setup (une seule fois)</div>
+      <hr class="offer-divider">
+      <div class="offer-feature"><span class="offer-feature-check">✓</span> Tout le pack Business</div>
+      <div class="offer-feature"><span class="offer-feature-check">✓</span> Chatbot sur votre site web</div>
+      <div class="offer-feature"><span class="offer-feature-check">✓</span> Newsletter mensuelle auto</div>
+      <div class="offer-feature"><span class="offer-feature-check">✓</span> Fiches PDF automatiques</div>
+      <div class="offer-feature"><span class="offer-feature-check">✓</span> Scoring leads IA</div>
+      <div class="offer-feature"><span class="offer-feature-check">✓</span> Accompagnement dédié</div>
+      <a href="#contact" class="offer-btn">Commencer →</a>
+    </div>
+  </div>
+</section>
+
+<!-- TÉMOIGNAGES -->
+<section class="testimonials">
+  <span class="section-badge">Ils nous font confiance</span>
+  <h2 class="section-title">Ce que disent nos clients</h2>
+  <div class="testi-grid">
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"Avant NovIA, je passais mes soirées à rédiger des annonces et répondre aux mails. Maintenant tout est automatique. J'ai signé 2 mandats supplémentaires le mois dernier grâce au temps récupéré."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">S</div>
+        <div>
+          <div class="testi-name">Sophie M.</div>
+          <div class="testi-role">Agence immobilière indépendante, Liège</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"Le système de relance automatique a transformé notre taux de conversion. Des prospects qu'on aurait oubliés nous rappellent maintenant d'eux-mêmes. L'équipe est ultra réactive."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">M</div>
+        <div>
+          <div class="testi-name">Marc D.</div>
+          <div class="testi-role">Directeur d'agence, Namur</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"J'étais sceptique sur l'IA au départ. Mais voir une annonce professionnelle générée en 90 secondes depuis mon téléphone... j'ai signé le jour même de la démo."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">A</div>
+        <div>
+          <div class="testi-name">Amélie V.</div>
+          <div class="testi-role">Agent immobilier, Bruxelles</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-section" id="contact">
+  <h2 class="section-title">Prêt à récupérer vos 5 heures par semaine ?</h2>
+  <p class="section-sub">Une démo de 30 minutes, gratuite et sans engagement. Vous voyez le système tourner avec vos propres données.</p>
+  <a href="mailto:contact@novia.be" class="btn-primary" style="font-size:16px;padding:18px 40px">Demander ma démo gratuite →</a>
+  <p style="margin-top:20px;font-size:13px;color:rgba(255,255,255,0.35)">Réponse sous 24h · Sans engagement · 100% gratuit</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo">Nov<span style="color:var(--terracotta)">IA</span></div>
+  <div>Automatisation IA pour les professionnels de l'immobilier</div>
+  <div>contact@novia.be</div>
+</footer>
+
+</body>
+</html>
