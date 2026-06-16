@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NovIA — Leads & Prospects</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --cream: #FAF7F2; --terracotta: #C4734A; --terracotta-dark: #A85C38;
+      --terracotta-light: rgba(196,115,74,0.08); --charcoal: #2C2A27;
+      --warm-gray: #6B6460; --light-text: #9A918A; --border: rgba(44,42,39,0.1);
+      --forest: #3D5A47; --forest-light: rgba(61,90,71,0.08); --white: #ffffff;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--charcoal); min-height: 100vh; }
+
+    .sidebar { position: fixed; top: 0; left: 0; width: 240px; height: 100vh; background: var(--charcoal); padding: 32px 20px; display: flex; flex-direction: column; z-index: 100; overflow-y: auto; }
+    .sidebar-logo { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600; color: white; margin-bottom: 6px; }
+    .sidebar-logo span { color: var(--terracotta); }
+    .sidebar-agency { font-size: 12px; color: rgba(255,255,255,0.35); margin-bottom: 36px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .sidebar-section { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.22); margin-bottom: 8px; margin-top: 20px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 9px; cursor: pointer; transition: background 0.15s; margin-bottom: 2px; text-decoration: none; }
+    .nav-item:hover { background: rgba(255,255,255,0.06); }
+    .nav-item.active { background: var(--terracotta); }
+    .nav-icon { font-size: 15px; width: 18px; text-align: center; }
+    .nav-label { font-size: 13px; color: rgba(255,255,255,0.7); }
+    .nav-item.active .nav-label { color: white; font-weight: 500; }
+    .nav-badge { margin-left: auto; background: var(--terracotta); color: white; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 10px; }
+    .nav-item.active .nav-badge { background: rgba(255,255,255,0.2); }
+    .sidebar-bottom { margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); }
+    .sidebar-plan { background: rgba(196,115,74,0.1); border: 1px solid rgba(196,115,74,0.18); border-radius: 10px; padding: 11px 14px; }
+    .sidebar-plan-label { font-size: 10px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 1px; }
+    .sidebar-plan-name { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.65); margin-top: 2px; }
+
+    .main { margin-left: 240px; min-height: 100vh; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding: 18px 36px; background: var(--white); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; }
+    .topbar-title { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 500; }
+    .topbar-right { display: flex; align-items: center; gap: 16px; }
+    .topbar-date { font-size: 13px; color: var(--light-text); }
+    .topbar-avatar { width: 34px; height: 34px; background: var(--terracotta); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: white; }
+
+    .content { padding: 32px 36px; }
+
+    /* AGENT SWITCHER */
+    .agent-switcher { display: flex; align-items: center; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+    .agent-switcher-label { font-size: 12px; color: var(--light-text); margin-right: 4px; text-transform: uppercase; letter-spacing: 1px; }
+    .agent-btn { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 50px; border: 1.5px solid var(--border); background: var(--white); cursor: pointer; transition: all 0.15s; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--warm-gray); }
+    .agent-btn:hover { border-color: var(--terracotta); color: var(--terracotta); }
+    .agent-btn.active { background: var(--charcoal); border-color: var(--charcoal); color: white; }
+    .agent-avatar { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: white; flex-shrink: 0; }
+    .av-all { background: var(--warm-gray); }
+    .av-sophie { background: var(--terracotta); }
+    .av-marc { background: var(--forest); }
+    .av-none { background: var(--light-text); }
+    .agent-count { font-size: 11px; background: rgba(0,0,0,0.08); padding: 1px 7px; border-radius: 10px; }
+    .agent-btn.active .agent-count { background: rgba(255,255,255,0.15); }
+
+    /* STATS */
+    .stats-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 24px; }
+    .stat-card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; transition: all 0.2s; }
+    .stat-label { font-size: 10px; color: var(--light-text); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .stat-value { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 500; transition: all 0.2s; }
+    .stat-sub { font-size: 11px; color: var(--light-text); margin-top: 3px; }
+    .stat-up { color: var(--forest); }
+    .stat-alert { color: #C0392B; }
+    .stat-card.highlight { border-color: rgba(196,115,74,0.3); background: var(--terracotta-light); }
+    .stat-card.highlight .stat-value { color: var(--terracotta); }
+
+    /* FILTERS */
+    .filters-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .filter-select { padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--charcoal); background: var(--white); outline: none; cursor: pointer; }
+    .filter-select:focus { border-color: var(--terracotta); }
+    .filter-search { flex: 1; min-width: 180px; padding: 8px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none; background: var(--white); }
+    .filter-search:focus { border-color: var(--terracotta); }
+    .btn-primary { padding: 8px 18px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; border: none; background: var(--terracotta); color: white; transition: background 0.2s; margin-left: auto; white-space: nowrap; }
+    .btn-primary:hover { background: var(--terracotta-dark); }
+
+    /* TABLE */
+    .table-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; overflow-x: auto; }
+    .leads-table { width: 100%; border-collapse: collapse; min-width: 900px; }
+    .leads-table th { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; color: var(--light-text); text-align: left; padding: 13px 16px; border-bottom: 1px solid var(--border); background: var(--cream); white-space: nowrap; }
+    .leads-table td { padding: 13px 16px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .leads-table tr:last-child td { border-bottom: none; }
+    .leads-table tbody tr { transition: background 0.1s; }
+    .leads-table tbody tr:hover td { background: rgba(196,115,74,0.03); cursor: pointer; }
+    .lead-name { font-weight: 500; }
+    .lead-sub { color: var(--light-text); font-size: 12px; margin-top: 2px; }
+    .empty-row td { text-align: center; padding: 48px; color: var(--light-text); font-size: 14px; }
+
+    .priority { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
+    .priority-high { background: rgba(192,57,43,0.08); color: #C0392B; }
+    .priority-mid { background: rgba(211,84,0,0.08); color: #D35400; }
+    .priority-low { background: rgba(74,115,196,0.08); color: #2E86C1; }
+    .p-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+    .p-dot-high { background: #C0392B; }
+    .p-dot-mid { background: #D35400; }
+    .p-dot-low { background: #2E86C1; }
+
+    .score-cell { display: flex; align-items: center; gap: 8px; }
+    .score-num { font-weight: 600; font-size: 13px; width: 26px; }
+    .score-bar { width: 44px; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .score-fill { height: 100%; border-radius: 2px; }
+    .fill-high { background: #C0392B; } .fill-mid { background: #D35400; } .fill-low { background: #2E86C1; }
+
+    .source-tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 6px; background: rgba(0,0,0,0.05); color: var(--warm-gray); white-space: nowrap; }
+    .last-action { font-size: 12px; color: var(--warm-gray); white-space: nowrap; }
+    .timer-urgent { font-size: 12px; color: #C0392B; font-weight: 500; white-space: nowrap; }
+    .timer-ok { font-size: 12px; color: var(--forest); font-weight: 500; }
+    .timer-late { font-size: 12px; color: #D35400; font-weight: 500; }
+
+    .action-btns { display: flex; gap: 5px; align-items: center; }
+    .btn-action { padding: 5px 10px; border-radius: 7px; font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500; cursor: pointer; border: 1.5px solid var(--border); background: white; color: var(--warm-gray); transition: all 0.15s; white-space: nowrap; text-decoration: none; display: inline-block; }
+    .btn-action:hover { border-color: var(--terracotta); color: var(--terracotta); }
+    .btn-green { background: var(--forest); color: white; border-color: var(--forest); }
+    .btn-green:hover { background: #2E4535; border-color: #2E4535; color: white; }
+    .btn-contacted { background: rgba(61,90,71,0.1); color: var(--forest); border-color: rgba(61,90,71,0.2); cursor: default; font-size: 11px; padding: 5px 10px; border-radius: 7px; border: 1.5px solid; }
+    .btn-assign { background: var(--terracotta-light); color: var(--terracotta); border-color: rgba(196,115,74,0.2); }
+    .btn-assign:hover { background: var(--terracotta); color: white; border-color: var(--terracotta); }
+
+    /* FICHE */
+    .overlay { display: none; position: fixed; inset: 0; background: rgba(44,42,39,0.35); z-index: 200; backdrop-filter: blur(2px); }
+    .overlay.open { display: block; }
+    .fiche { position: fixed; top: 0; right: -520px; width: 500px; height: 100vh; background: var(--white); z-index: 300; transition: right 0.28s cubic-bezier(0.4,0,0.2,1); overflow-y: auto; box-shadow: -8px 0 40px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+    .fiche.open { right: 0; }
+    .fiche-header { padding: 26px 28px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .fiche-name { font-family: 'Fraunces', serif; font-size: 21px; font-weight: 500; }
+    .fiche-meta { font-size: 12px; color: var(--warm-gray); margin-top: 4px; }
+    .fiche-close { width: 30px; height: 30px; border-radius: 7px; border: 1.5px solid var(--border); background: white; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; color: var(--warm-gray); flex-shrink: 0; transition: all 0.15s; }
+    .fiche-close:hover { border-color: var(--terracotta); color: var(--terracotta); }
+    .fiche-actions { padding: 14px 28px; border-bottom: 1px solid var(--border); display: flex; gap: 8px; }
+    .fiche-btn { flex: 1; padding: 9px 8px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; border: 1.5px solid var(--border); background: white; color: var(--warm-gray); transition: all 0.15s; text-align: center; text-decoration: none; display: block; }
+    .fiche-btn:hover { border-color: var(--terracotta); color: var(--terracotta); }
+    .fiche-btn-primary { background: var(--terracotta); color: white; border-color: var(--terracotta); }
+    .fiche-btn-primary:hover { background: var(--terracotta-dark); color: white; }
+    .fiche-body { padding: 22px 28px; flex: 1; }
+    .fiche-section { margin-bottom: 22px; }
+    .fiche-section-title { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 1.5px; color: var(--light-text); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .fiche-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 9px; gap: 12px; }
+    .fiche-key { font-size: 12px; color: var(--warm-gray); flex-shrink: 0; }
+    .fiche-val { font-size: 13px; font-weight: 500; text-align: right; }
+    .score-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+    .score-tag-pos { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: var(--forest-light); color: var(--forest); }
+    .score-tag-neg { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: rgba(192,57,43,0.07); color: #C0392B; }
+    .status-select { padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--charcoal); background: white; outline: none; width: 100%; margin-top: 6px; cursor: pointer; }
+    .status-select:focus { border-color: var(--terracotta); }
+    .history-item { display: flex; gap: 10px; margin-bottom: 12px; }
+    .h-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+    .h-text { font-size: 13px; line-height: 1.5; }
+    .h-time { font-size: 11px; color: var(--light-text); margin-top: 2px; }
+    .notes-area { width: 100%; padding: 11px 13px; border: 1.5px solid var(--border); border-radius: 9px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--charcoal); background: var(--cream); outline: none; resize: vertical; min-height: 80px; margin-top: 8px; }
+    .notes-area:focus { border-color: var(--terracotta); background: white; }
+    .save-btn { margin-top: 8px; padding: 7px 16px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; border: none; background: var(--terracotta); color: white; }
+
+    /* MODALES */
+    .modale { display: none; position: fixed; inset: 0; z-index: 400; align-items: center; justify-content: center; background: rgba(44,42,39,0.3); }
+    .modale.open { display: flex; }
+    .modale-box { background: white; border-radius: 16px; padding: 28px; width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+    .modale-title { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 500; margin-bottom: 16px; }
+    .modale-input { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 9px; font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; margin-bottom: 12px; }
+    .modale-input:focus { border-color: var(--terracotta); }
+    .modale-textarea { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 9px; font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; resize: vertical; min-height: 90px; margin-bottom: 12px; }
+    .modale-textarea:focus { border-color: var(--terracotta); }
+    .modale-btns { display: flex; gap: 8px; justify-content: flex-end; }
+    .modale-cancel { padding: 8px 16px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; border: 1.5px solid var(--border); background: white; color: var(--warm-gray); }
+    .modale-send { padding: 8px 18px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; border: none; background: var(--terracotta); color: white; }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">Nov<span>IA</span></div>
+  <div class="sidebar-agency">Agence Dupont · Liège</div>
+  <div class="sidebar-section">Outils</div>
+  <a href="novia-generateur.html" class="nav-item"><span class="nav-icon">✍️</span><span class="nav-label">Générateur d'annonces</span></a>
+  <a href="novia-leads.html" class="nav-item active"><span class="nav-icon">👥</span><span class="nav-label">Leads & Prospects</span><span class="nav-badge">3</span></a>
+  <a href="#" class="nav-item"><span class="nav-icon">📅</span><span class="nav-label">Gestion des RDV</span></a>
+  <a href="#" class="nav-item"><span class="nav-icon">⚡</span><span class="nav-label">Relances auto</span></a>
+  <div class="sidebar-section">Rapports</div>
+  <a href="novia-app.html" class="nav-item"><span class="nav-icon">🏠</span><span class="nav-label">Dashboard</span></a>
+  <a href="#" class="nav-item"><span class="nav-icon">📊</span><span class="nav-label">Rapport mensuel</span></a>
+  <a href="#" class="nav-item"><span class="nav-icon">⭐</span><span class="nav-label">Avis Google</span></a>
+  <div class="sidebar-bottom">
+    <div class="sidebar-plan">
+      <div class="sidebar-plan-label">Votre plan</div>
+      <div class="sidebar-plan-name">Business</div>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title">Leads & Prospects</div>
+    <div class="topbar-right">
+      <span class="topbar-date">Mercredi 11 juin 2025</span>
+      <div class="topbar-avatar">AD</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- AGENT SWITCHER -->
+    <div class="agent-switcher">
+      <span class="agent-switcher-label">Vue :</span>
+      <button class="agent-btn active" onclick="filtrerAgent('tous', this)">
+        <div class="agent-avatar av-all">T</div>
+        Tous les agents
+        <span class="agent-count" id="count-tous">5</span>
+      </button>
+      <button class="agent-btn" onclick="filtrerAgent('Sophie D.', this)">
+        <div class="agent-avatar av-sophie">SD</div>
+        Sophie D.
+        <span class="agent-count" id="count-sophie">2</span>
+      </button>
+      <button class="agent-btn" onclick="filtrerAgent('Marc L.', this)">
+        <div class="agent-avatar av-marc">ML</div>
+        Marc L.
+        <span class="agent-count" id="count-marc">2</span>
+      </button>
+      <button class="agent-btn" onclick="filtrerAgent(null, this)">
+        <div class="agent-avatar av-none">—</div>
+        Non assigné
+        <span class="agent-count" id="count-none">1</span>
+      </button>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Nouveaux aujourd'hui</div>
+        <div class="stat-value" id="stat-new">3</div>
+        <div class="stat-sub" id="stat-new-sub">Tous agents</div>
+      </div>
+      <div class="stat-card highlight">
+        <div class="stat-label">À contacter</div>
+        <div class="stat-value" id="stat-todo">5</div>
+        <div class="stat-sub" id="stat-todo-sub">En attente</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">En retard</div>
+        <div class="stat-value stat-alert" id="stat-late">2</div>
+        <div class="stat-sub stat-alert" id="stat-late-sub">Relance dépassée</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">RDV fixés</div>
+        <div class="stat-value" id="stat-rdv">7</div>
+        <div class="stat-sub" id="stat-rdv-sub">Ce mois</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Tps moy. réponse</div>
+        <div class="stat-value" id="stat-temps" style="font-size:20px">8 min</div>
+        <div class="stat-sub stat-up">Objectif &lt; 15 min</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Taux de contact</div>
+        <div class="stat-value" id="stat-taux">74%</div>
+        <div class="stat-sub stat-up" id="stat-taux-sub">↑ +6% ce mois</div>
+      </div>
+    </div>
+
+    <!-- FILTRES -->
+    <div class="filters-bar">
+      <input type="text" class="filter-search" placeholder="Rechercher un prospect, un bien..." oninput="filtrerRecherche(this.value)">
+      <select class="filter-select" onchange="filtrerStatut(this.value)">
+        <option value="">Tous statuts</option>
+        <option>Nouveau</option>
+        <option>Contacté</option>
+        <option>Appel tenté</option>
+        <option>RDV fixé</option>
+        <option>Pas répondu</option>
+        <option>À rappeler</option>
+        <option>Lead perdu</option>
+      </select>
+      <select class="filter-select" onchange="filtrerSource(this.value)">
+        <option value="">Toutes sources</option>
+        <option>Site web</option>
+        <option>Immoweb</option>
+        <option>Facebook</option>
+        <option>Google Ads</option>
+        <option>Téléphone</option>
+        <option>Import manuel</option>
+      </select>
+      <button class="btn-primary">+ Ajouter un lead</button>
+    </div>
+
+    <div class="table-card">
+      <table class="leads-table">
+        <thead>
+          <tr>
+            <th>Prospect</th>
+            <th>Bien demandé</th>
+            <th>Source</th>
+            <th>Priorité</th>
+            <th>Score</th>
+            <th>Dernière action</th>
+            <th>Agent</th>
+            <th>Relance</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<div class="overlay" id="overlay" onclick="fermerFiche()"></div>
+<div class="fiche" id="fiche">
+  <div class="fiche-header">
+    <div><div class="fiche-name" id="f-nom"></div><div class="fiche-meta" id="f-meta"></div></div>
+    <button class="fiche-close" onclick="fermerFiche()">✕</button>
+  </div>
+  <div class="fiche-actions">
+    <a class="fiche-btn" id="f-tel-btn" href="#">📞 Appeler</a>
+    <button class="fiche-btn" onclick="ouvrirSMS()">💬 SMS</button>
+    <a class="fiche-btn" id="f-email-btn" href="#">✉️ Email</a>
+    <button class="fiche-btn fiche-btn-primary" onclick="ouvrirRDV()">📅 RDV</button>
+  </div>
+  <div class="fiche-body">
+    <div class="fiche-section">
+      <div class="fiche-section-title">Informations</div>
+      <div class="fiche-row"><span class="fiche-key">Téléphone</span><span class="fiche-val" id="f-tel"></span></div>
+      <div class="fiche-row"><span class="fiche-key">Email</span><span class="fiche-val" id="f-email"></span></div>
+      <div class="fiche-row"><span class="fiche-key">Bien demandé</span><span class="fiche-val" id="f-bien"></span></div>
+      <div class="fiche-row"><span class="fiche-key">Source</span><span class="fiche-val" id="f-source"></span></div>
+      <div class="fiche-row"><span class="fiche-key">Date de contact</span><span class="fiche-val" id="f-date"></span></div>
+      <div class="fiche-row"><span class="fiche-key">Agent assigné</span><span class="fiche-val" id="f-agent"></span></div>
+    </div>
+    <div class="fiche-section">
+      <div class="fiche-section-title">Score — <span id="f-score-num"></span>/100</div>
+      <div style="font-size:12px;color:var(--warm-gray);margin-bottom:10px">Calculé sur les critères ci-dessous</div>
+      <div class="score-tags" id="f-tags"></div>
+    </div>
+    <div class="fiche-section">
+      <div class="fiche-section-title">Statut</div>
+      <select class="status-select" id="f-statut" onchange="changerStatut(this.value)">
+        <option>Nouveau</option><option>Contacté</option><option>Appel tenté</option>
+        <option>RDV fixé</option><option>Pas répondu</option><option>À rappeler</option><option>Lead perdu</option>
+      </select>
+    </div>
+    <div class="fiche-section">
+      <div class="fiche-section-title">Historique</div>
+      <div id="f-history"></div>
+    </div>
+    <div class="fiche-section">
+      <div class="fiche-section-title">Notes internes</div>
+      <textarea class="notes-area" id="f-notes" placeholder="Ajoutez une note..."></textarea>
+      <button class="save-btn">Sauvegarder</button>
+    </div>
+    <div class="fiche-section">
+      <div class="fiche-section-title">Prochaine relance</div>
+      <div class="fiche-row"><span class="fiche-key">Relance auto dans</span><span class="fiche-val" id="f-timer" style="color:#C0392B"></span></div>
+    </div>
+  </div>
+</div>
+
+<div class="modale" id="modale-sms">
+  <div class="modale-box">
+    <div class="modale-title">Envoyer un SMS</div>
+    <input class="modale-input" id="sms-dest" readonly>
+    <textarea class="modale-textarea" id="sms-msg"></textarea>
+    <div class="modale-btns">
+      <button class="modale-cancel" onclick="fermerModale('modale-sms')">Annuler</button>
+      <button class="modale-send" onclick="envoyerSMS()">Envoyer</button>
+    </div>
+  </div>
+</div>
+
+<div class="modale" id="modale-rdv">
+  <div class="modale-box">
+    <div class="modale-title">Planifier un rendez-vous</div>
+    <input class="modale-input" id="rdv-dest" readonly>
+    <input class="modale-input" type="date" id="rdv-date">
+    <input class="modale-input" type="time" id="rdv-heure">
+    <input class="modale-input" id="rdv-lieu" placeholder="Lieu du rendez-vous">
+    <div class="modale-btns">
+      <button class="modale-cancel" onclick="fermerModale('modale-rdv')">Annuler</button>
+      <button class="modale-send" onclick="confirmerRDV()">Confirmer le RDV</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const leadsData = [
+  { id:'marc', nom:'Marc Dupont', tel:'0478 12 34 56', email:'marc@gmail.com', bien:'Appartement Liège 150m²', prix:'249.000 €', source:'Site web', date:'11/06 à 14h32', agent:'Sophie D.', score:92, priorite:'haute', statut:'Nouveau', timer:'22 min', derniere:'SMS envoyé', notes:'Très intéressé, demande à voir rapidement. Budget flexible.',
+    tags:[{t:'Visite demandée',v:'+40',pos:true},{t:'Téléphone valide',v:'+20',pos:true},{t:'Email fourni',v:'+10',pos:true},{t:'Bien à forte valeur',v:'+10',pos:true},{t:'Source site web',v:'+10',pos:true},{t:'Nouveau lead',v:'+5',pos:true}],
+    history:[{text:'Demande de visite reçue via le site web',time:'14h32',color:'var(--terracotta)'},{text:'SMS de confirmation envoyé automatiquement',time:'14h33',color:'var(--forest)'},{text:'Alerte envoyée à Sophie D.',time:'14h33',color:'#2E86C1'}]
+  },
+  { id:'sophie', nom:'Sophie Lambert', tel:'0471 98 76 54', email:'s.lambert@gmail.com', bien:'Maison Namur 4 chambres', prix:'320.000 €', source:'Immoweb', date:'11/06 à 13h55', agent:'Marc L.', score:85, priorite:'haute', statut:'Nouveau', timer:'8 min', derniere:'Alerte agent', notes:'',
+    tags:[{t:'Visite demandée',v:'+40',pos:true},{t:'Téléphone valide',v:'+20',pos:true},{t:'Email fourni',v:'+10',pos:true},{t:'Plusieurs biens consultés',v:'+15',pos:true},{t:'Source pub large',v:'-10',pos:false}],
+    history:[{text:'Formulaire rempli sur Immoweb',time:'13h55',color:'var(--terracotta)'},{text:'Alerte envoyée à Marc L.',time:'13h55',color:'#2E86C1'}]
+  },
+  { id:'thomas', nom:'Thomas Renard', tel:'0465 23 45 67', email:'t.renard@hotmail.com', bien:'Studio Bruxelles', prix:'850 €/mois', source:'Facebook', date:'11/06 à 12h30', agent:'Sophie D.', score:54, priorite:'moyenne', statut:'RDV fixé', timer:'RDV fixé', derniere:'RDV vendredi 13h', notes:'RDV vendredi 13h sur place.',
+    tags:[{t:'Téléphone valide',v:'+20',pos:true},{t:'Email fourni',v:'+10',pos:true},{t:'RDV fixé',v:'+30',pos:true},{t:'Source pub large',v:'-10',pos:false}],
+    history:[{text:'Demande reçue via Facebook',time:'12h30',color:'var(--terracotta)'},{text:'Appel effectué par Sophie D.',time:'12h45',color:'#2E86C1'},{text:'RDV fixé vendredi 13h',time:'13h10',color:'var(--forest)'}]
+  },
+  { id:'julie', nom:'Julie Martin', tel:'0479 11 22 33', email:'julie.m@gmail.com', bien:'Villa Waterloo', prix:'750.000 €', source:'Google Ads', date:'11/06 à 11h15', agent:null, score:21, priorite:'faible', statut:'Nouveau', timer:'—', derniere:'SMS envoyé', notes:'',
+    tags:[{t:'Email fourni',v:'+10',pos:true},{t:'Téléphone valide',v:'+20',pos:true},{t:'Source pub large',v:'-10',pos:false},{t:'Message incomplet',v:'-15',pos:false}],
+    history:[{text:'Formulaire rempli via Google Ads',time:'11h15',color:'var(--terracotta)'},{text:'SMS de confirmation envoyé',time:'11h15',color:'var(--forest)'}]
+  },
+  { id:'pierre', nom:'Pierre Dubois', tel:'0468 55 44 33', email:'p.dubois@outlook.com', bien:'Appartement Liège 85m²', prix:'175.000 €', source:'Téléphone', date:'11/06 à 10h45', agent:'Marc L.', score:61, priorite:'moyenne', statut:'Appel tenté', timer:'En retard', derniere:'Appel tenté', notes:'A appelé directement, pas disponible lors du rappel.',
+    tags:[{t:'Téléphone valide',v:'+20',pos:true},{t:'Email fourni',v:'+10',pos:true},{t:'Visite demandée',v:'+40',pos:true},{t:'Message incomplet',v:'-15',pos:false}],
+    history:[{text:'Appel entrant enregistré',time:'10h45',color:'var(--terracotta)'},{text:'Rappel tenté par Marc L. — pas de réponse',time:'11h30',color:'#D35400'},{text:'Relance automatique programmée',time:'11h31',color:'#2E86C1'}]
+  }
+];
+
+// Stats par agent
+const statsParAgent = {
+  tous:      { new:3, todo:5, late:2, rdv:7, temps:'8 min', taux:'74%', tauxSub:'↑ +6% ce mois', newSub:'Tous agents' },
+  'Sophie D.': { new:2, todo:2, late:0, rdv:3, temps:'6 min', taux:'85%', tauxSub:'↑ +12% ce mois', newSub:'Sophie D.' },
+  'Marc L.': { new:1, todo:2, late:1, rdv:3, temps:'11 min', taux:'66%', tauxSub:'↓ -2% ce mois', newSub:'Marc L.' },
+  null:      { new:1, todo:1, late:1, rdv:1, temps:'—', taux:'0%', tauxSub:'Non assigné', newSub:'Non assigné' }
+};
+
+let agentActif = 'tous';
+let statutFiltre = '';
+let sourceFiltre = '';
+let rechercheFiltre = '';
+let leadActif = null;
+
+function filtrerAgent(agent, btn) {
+  agentActif = agent;
+  document.querySelectorAll('.agent-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  majStats(agent);
+  renderTable();
+}
+
+function majStats(agent) {
+  const key = agent === 'tous' ? 'tous' : agent;
+  const s = statsParAgent[key] || statsParAgent['tous'];
+  document.getElementById('stat-new').textContent = s.new;
+  document.getElementById('stat-new-sub').textContent = s.newSub;
+  document.getElementById('stat-todo').textContent = s.todo;
+  document.getElementById('stat-late').textContent = s.late;
+  document.getElementById('stat-rdv').textContent = s.rdv;
+  document.getElementById('stat-temps').textContent = s.temps;
+  document.getElementById('stat-taux').textContent = s.taux;
+  document.getElementById('stat-taux-sub').textContent = s.tauxSub;
+}
+
+function filtrerStatut(v) { statutFiltre = v; renderTable(); }
+function filtrerSource(v) { sourceFiltre = v; renderTable(); }
+function filtrerRecherche(v) { rechercheFiltre = v.toLowerCase(); renderTable(); }
+
+function leadsVisibles() {
+  return leadsData.filter(l => {
+    if (agentActif !== 'tous' && l.agent !== agentActif) return false;
+    if (statutFiltre && l.statut !== statutFiltre) return false;
+    if (sourceFiltre && l.source !== sourceFiltre) return false;
+    if (rechercheFiltre && !l.nom.toLowerCase().includes(rechercheFiltre) && !l.bien.toLowerCase().includes(rechercheFiltre)) return false;
+    return true;
+  });
+}
+
+function renderTable() {
+  const tbody = document.getElementById('tbody');
+  const visible = leadsVisible();
+  if (visible.length === 0) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="9">Aucun lead pour cette sélection.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = visible.map(l => {
+    const pClass = l.priorite === 'haute' ? 'priority-high' : l.priorite === 'moyenne' ? 'priority-mid' : 'priority-low';
+    const pDot = l.priorite === 'haute' ? 'p-dot-high' : l.priorite === 'moyenne' ? 'p-dot-mid' : 'p-dot-low';
+    const pLabel = l.priorite === 'haute' ? 'Haute' : l.priorite === 'moyenne' ? 'Moyenne' : 'Faible';
+    const fillClass = l.priorite === 'haute' ? 'fill-high' : l.priorite === 'moyenne' ? 'fill-mid' : 'fill-low';
+    const timerHtml = l.timer === 'RDV fixé' ? `<span class="timer-ok">RDV fixé</span>`
+      : l.timer === 'En retard' ? `<span class="timer-late">En retard</span>`
+      : l.timer === '—' ? `<span class="lead-sub">—</span>`
+      : `<span class="timer-urgent">${l.timer}</span>`;
+    const agentHtml = l.agent
+      ? `<div style="display:flex;align-items:center;gap:6px"><div class="agent-avatar ${l.agent==='Sophie D.'?'av-sophie':'av-marc'}" style="width:20px;height:20px;font-size:9px">${l.agent==='Sophie D.'?'SD':'ML'}</div><span class="lead-sub">${l.agent}</span></div>`
+      : `<button class="btn-action btn-assign" onclick="event.stopPropagation();assigner('${l.id}')">Assigner</button>`;
+    const isContacted = ['Contacté','RDV fixé'].includes(l.statut);
+    const actionBtn = isContacted
+      ? `<span class="btn-contacted">✓ ${l.statut}</span>`
+      : `<button class="btn-green btn-action" onclick="event.stopPropagation();marquerContacte('${l.id}')">Marquer contacté</button>`;
+    return `<tr onclick="ouvrirFiche('${l.id}')">
+      <td><div class="lead-name">${l.nom}</div><div class="lead-sub">${l.tel}</div></td>
+      <td><div>${l.bien}</div><div class="lead-sub">${l.prix}</div></td>
+      <td><span class="source-tag">${l.source}</span></td>
+      <td><span class="priority ${pClass}"><span class="p-dot ${pDot}"></span>${pLabel}</span></td>
+      <td><div class="score-cell"><span class="score-num">${l.score}</span><div class="score-bar"><div class="score-fill ${fillClass}" style="width:${l.score}%"></div></div></div></td>
+      <td><span class="last-action">${l.derniere}</span></td>
+      <td>${agentHtml}</td>
+      <td>${timerHtml}</td>
+      <td><div class="action-btns"><a class="btn-action" href="tel:${l.tel.replace(/\s/g,'')}" onclick="event.stopPropagation()">Appeler</a>${actionBtn}</div></td>
+    </tr>`;
+  }).join('');
+}
+
+function leadsVisible() {
+  return leadsData.filter(l => {
+    if (agentActif !== 'tous' && l.agent !== agentActif) return false;
+    if (statutFiltre && l.statut !== statutFiltre) return false;
+    if (sourceFiltre && l.source !== sourceFiltre) return false;
+    if (rechercheFiltre && !l.nom.toLowerCase().includes(rechercheFiltre) && !l.bien.toLowerCase().includes(rechercheFiltre)) return false;
+    return true;
+  });
+}
+
+function marquerContacte(id) {
+  const l = leadsData.find(x => x.id === id);
+  if (!l) return;
+  l.statut = 'Contacté'; l.timer = '—'; l.derniere = 'Contacté';
+  l.history.unshift({text:'Marqué comme contacté', time:'maintenant', color:'var(--forest)'});
+  const todo = parseInt(document.getElementById('stat-todo').textContent);
+  if (todo > 0) document.getElementById('stat-todo').textContent = todo - 1;
+  renderTable();
+  if (leadActif && leadActif.id === id) { document.getElementById('f-statut').value = 'Contacté'; renderHistory(l); }
+}
+
+function assigner(id) {
+  const agents = ['Sophie D.', 'Marc L.'];
+  const choix = prompt('Assigner à :\n1. Sophie D.\n2. Marc L.\n\nEntrez 1 ou 2');
+  if (choix === '1' || choix === '2') {
+    leadsData.find(x => x.id === id).agent = agents[parseInt(choix)-1];
+    document.getElementById('count-none').textContent = leadsData.filter(l => !l.agent).length;
+    renderTable();
+  }
+}
+
+function ouvrirFiche(id) {
+  const l = leadsData.find(x => x.id === id);
+  leadActif = l;
+  document.getElementById('f-nom').textContent = l.nom;
+  document.getElementById('f-meta').textContent = `Priorité ${l.priorite} · ${l.source} · Score ${l.score}/100`;
+  document.getElementById('f-tel').textContent = l.tel;
+  document.getElementById('f-email').textContent = l.email;
+  document.getElementById('f-bien').textContent = `${l.bien} — ${l.prix}`;
+  document.getElementById('f-source').textContent = l.source;
+  document.getElementById('f-date').textContent = l.date;
+  document.getElementById('f-agent').textContent = l.agent || 'Non assigné';
+  document.getElementById('f-score-num').textContent = l.score;
+  document.getElementById('f-statut').value = l.statut;
+  document.getElementById('f-notes').value = l.notes;
+  document.getElementById('f-timer').textContent = l.timer;
+  document.getElementById('f-tel-btn').href = `tel:${l.tel.replace(/\s/g,'')}`;
+  document.getElementById('f-email-btn').href = `mailto:${l.email}?subject=Suite à votre demande — ${l.bien}`;
+  document.getElementById('f-tags').innerHTML = l.tags.map(t => `<span class="${t.pos?'score-tag-pos':'score-tag-neg'}">${t.t} ${t.v}</span>`).join('');
+  renderHistory(l);
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('fiche').classList.add('open');
+}
+
+function renderHistory(l) {
+  document.getElementById('f-history').innerHTML = l.history.map(h =>
+    `<div class="history-item"><div class="h-dot" style="background:${h.color};margin-top:4px;flex-shrink:0"></div><div><div class="h-text">${h.text}</div><div class="h-time">${h.time}</div></div></div>`
+  ).join('');
+}
+
+function changerStatut(val) {
+  if (!leadActif) return;
+  leadActif.statut = val; leadActif.derniere = val;
+  if (val === 'Contacté') {
+    leadActif.timer = '—';
+    leadActif.history.unshift({text:'Statut changé : Contacté', time:'maintenant', color:'var(--forest)'});
+    const todo = parseInt(document.getElementById('stat-todo').textContent);
+    if (todo > 0) document.getElementById('stat-todo').textContent = todo - 1;
+  }
+  renderHistory(leadActif);
+  renderTable();
+}
+
+function fermerFiche() {
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('fiche').classList.remove('open');
+  leadActif = null;
+}
+
+function ouvrirSMS() {
+  if (!leadActif) return;
+  document.getElementById('sms-dest').value = `${leadActif.nom} — ${leadActif.tel}`;
+  document.getElementById('sms-msg').value = `Agence Dupont — Bonjour ${leadActif.nom.split(' ')[0]}, suite à votre demande pour ${leadActif.bien}, un conseiller vous recontacte rapidement.`;
+  document.getElementById('modale-sms').classList.add('open');
+}
+
+function envoyerSMS() {
+  if (leadActif) {
+    leadActif.derniere = 'SMS envoyé';
+    leadActif.history.unshift({text:'SMS envoyé manuellement', time:'maintenant', color:'var(--forest)'});
+    renderHistory(leadActif); renderTable();
+  }
+  fermerModale('modale-sms');
+}
+
+function ouvrirRDV() {
+  if (!leadActif) return;
+  document.getElementById('rdv-dest').value = leadActif.nom;
+  document.getElementById('modale-rdv').classList.add('open');
+}
+
+function confirmerRDV() {
+  const date = document.getElementById('rdv-date').value;
+  const heure = document.getElementById('rdv-heure').value;
+  const lieu = document.getElementById('rdv-lieu').value;
+  if (leadActif && date && heure) {
+    leadActif.statut = 'RDV fixé'; leadActif.timer = 'RDV fixé'; leadActif.derniere = `RDV ${date} ${heure}`;
+    leadActif.history.unshift({text:`RDV fixé le ${date} à ${heure}${lieu?' — '+lieu:''}`, time:'maintenant', color:'var(--forest)'});
+    document.getElementById('f-statut').value = 'RDV fixé';
+    renderHistory(leadActif); renderTable();
+  }
+  fermerModale('modale-rdv');
+}
+
+function fermerModale(id) { document.getElementById(id).classList.remove('open'); }
+
+// Init
+majStats('tous');
+renderTable();
+</script>
+</body>
+</html>
