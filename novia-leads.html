@@ -381,28 +381,69 @@
 </div>
 
 <script>
-const leadsData = [
-  { id:'marc', nom:'Marc Dupont', tel:'0478 12 34 56', email:'marc@gmail.com', bien:'Appartement Liège 150m²', prix:'249.000 €', source:'Site web', date:'11/06 à 14h32', agent:'Sophie D.', score:92, priorite:'haute', statut:'Nouveau', timer:'22 min', derniere:'SMS envoyé', notes:'Très intéressé, demande à voir rapidement. Budget flexible.',
-    tags:[{t:'Visite demandée',v:'+40',pos:true},{t:'Téléphone valide',v:'+20',pos:true},{t:'Email fourni',v:'+10',pos:true},{t:'Bien à forte valeur',v:'+10',pos:true},{t:'Source site web',v:'+10',pos:true},{t:'Nouveau lead',v:'+5',pos:true}],
-    history:[{text:'Demande de visite reçue via le site web',time:'14h32',color:'var(--terracotta)'},{text:'SMS de confirmation envoyé automatiquement',time:'14h33',color:'var(--forest)'},{text:'Alerte envoyée à Sophie D.',time:'14h33',color:'#2E86C1'}]
-  },
-  { id:'sophie', nom:'Sophie Lambert', tel:'0471 98 76 54', email:'s.lambert@gmail.com', bien:'Maison Namur 4 chambres', prix:'320.000 €', source:'Immoweb', date:'11/06 à 13h55', agent:'Marc L.', score:85, priorite:'haute', statut:'Nouveau', timer:'8 min', derniere:'Alerte agent', notes:'',
-    tags:[{t:'Visite demandée',v:'+40',pos:true},{t:'Téléphone valide',v:'+20',pos:true},{t:'Email fourni',v:'+10',pos:true},{t:'Plusieurs biens consultés',v:'+15',pos:true},{t:'Source pub large',v:'-10',pos:false}],
-    history:[{text:'Formulaire rempli sur Immoweb',time:'13h55',color:'var(--terracotta)'},{text:'Alerte envoyée à Marc L.',time:'13h55',color:'#2E86C1'}]
-  },
-  { id:'thomas', nom:'Thomas Renard', tel:'0465 23 45 67', email:'t.renard@hotmail.com', bien:'Studio Bruxelles', prix:'850 €/mois', source:'Facebook', date:'11/06 à 12h30', agent:'Sophie D.', score:54, priorite:'moyenne', statut:'RDV fixé', timer:'RDV fixé', derniere:'RDV vendredi 13h', notes:'RDV vendredi 13h sur place.',
-    tags:[{t:'Téléphone valide',v:'+20',pos:true},{t:'Email fourni',v:'+10',pos:true},{t:'RDV fixé',v:'+30',pos:true},{t:'Source pub large',v:'-10',pos:false}],
-    history:[{text:'Demande reçue via Facebook',time:'12h30',color:'var(--terracotta)'},{text:'Appel effectué par Sophie D.',time:'12h45',color:'#2E86C1'},{text:'RDV fixé vendredi 13h',time:'13h10',color:'var(--forest)'}]
-  },
-  { id:'julie', nom:'Julie Martin', tel:'0479 11 22 33', email:'julie.m@gmail.com', bien:'Villa Waterloo', prix:'750.000 €', source:'Google Ads', date:'11/06 à 11h15', agent:null, score:21, priorite:'faible', statut:'Nouveau', timer:'—', derniere:'SMS envoyé', notes:'',
-    tags:[{t:'Email fourni',v:'+10',pos:true},{t:'Téléphone valide',v:'+20',pos:true},{t:'Source pub large',v:'-10',pos:false},{t:'Message incomplet',v:'-15',pos:false}],
-    history:[{text:'Formulaire rempli via Google Ads',time:'11h15',color:'var(--terracotta)'},{text:'SMS de confirmation envoyé',time:'11h15',color:'var(--forest)'}]
-  },
-  { id:'pierre', nom:'Pierre Dubois', tel:'0468 55 44 33', email:'p.dubois@outlook.com', bien:'Appartement Liège 85m²', prix:'175.000 €', source:'Téléphone', date:'11/06 à 10h45', agent:'Marc L.', score:61, priorite:'moyenne', statut:'Appel tenté', timer:'En retard', derniere:'Appel tenté', notes:'A appelé directement, pas disponible lors du rappel.',
-    tags:[{t:'Téléphone valide',v:'+20',pos:true},{t:'Email fourni',v:'+10',pos:true},{t:'Visite demandée',v:'+40',pos:true},{t:'Message incomplet',v:'-15',pos:false}],
-    history:[{text:'Appel entrant enregistré',time:'10h45',color:'var(--terracotta)'},{text:'Rappel tenté par Marc L. — pas de réponse',time:'11h30',color:'#D35400'},{text:'Relance automatique programmée',time:'11h31',color:'#2E86C1'}]
+// Configuration Supabase
+const SUPABASE_URL = 'https://auxbhyrnmkffjnuyfwiy.supabase.co';
+const SUPABASE_KEY = 'sb_secret_Fcblcv1ZZNiVrarvxtr7fw_akDHYUTQ';
+
+let leadsData = [];
+
+// Convertir un lead Supabase en format page
+function convertirLead(l) {
+  const score = l.score || 0;
+  const priorite = score >= 8 ? 'haute' : score >= 5 ? 'moyenne' : 'faible';
+  const date = l.created_at ? new Date(l.created_at).toLocaleDateString('fr-BE', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'}).replace(',', ' à') : '—';
+  return {
+    id: l.id,
+    nom: l.nom || '—',
+    tel: l.telephone || '—',
+    email: l.email || '—',
+    bien: l.reference_bien || '—',
+    prix: l.budget || '—',
+    source: l.source || '—',
+    date: date,
+    agent: l.agent_assigne || null,
+    score: score * 10,
+    scoreRaw: score,
+    priorite: priorite,
+    statut: l.statut || 'nouveau',
+    timer: l.statut === 'nouveau' ? 'Nouveau' : l.statut,
+    derniere: l.prochaine_action || '—',
+    notes: l.notes || '',
+    resume_ia: l.resume_ia || '',
+    raison_score: l.raison_score || '',
+    temperature: l.temperature || '',
+    ville: l.ville || '',
+    tags: [
+      {t: `Score IA: ${score}/10`, v: '', pos: score >= 5},
+      {t: l.temperature || 'inconnu', v: '', pos: l.temperature === 'chaud'},
+      {t: l.type_demande || 'demande', v: '', pos: true},
+    ],
+    history: [
+      {text: `Lead entré via ${l.source || 'formulaire'}`, time: date, color: 'var(--terracotta)'},
+      {text: l.resume_ia || 'Analyse IA effectuée', time: date, color: 'var(--forest)'},
+    ]
+  };
+}
+
+// Charger les leads depuis Supabase
+async function chargerLeads() {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/leads?order=created_at.desc`, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`
+      }
+    });
+    const data = await res.json();
+    leadsData = data.map(convertirLead);
+    majStats('tous');
+    renderTable();
+  } catch(e) {
+    console.error('Erreur chargement leads:', e);
+    leadsData = [];
+    renderTable();
   }
-];
+}
 
 // Stats par agent
 const statsParAgent = {
@@ -607,8 +648,7 @@ function confirmerRDV() {
 function fermerModale(id) { document.getElementById(id).classList.remove('open'); }
 
 // Init
-majStats('tous');
-renderTable();
+chargerLeads();
 </script>
 </body>
 </html>
